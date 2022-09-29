@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: testdomainname
+spec:
+  secretName: testdomainname-com
+  issuerRef:
+    name: letsencrypt-prod
+    kind: ClusterIssuer
+  # letsencrypt will check if we actually have this domain by trying to access it
+  commonName: testdomainname.org
+  dnsNames:
+    - testdomainname.org
+    - www.testdomainname.org

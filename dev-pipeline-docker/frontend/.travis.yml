@@ -1,0 +1,27 @@
+language: generic
+sudo: required
+services: 
+  - docker
+
+before_install:
+  - docker build -f Dockerfile.dev -t connorethan/docker-react . 
+
+# These commands will be run when travis starts testing 
+# and if any of these return a status code other than 0 tests fail
+# -e is for environment variables to set in container
+script:
+  - docker run -e CI=true connorethan/docker-react npm run test
+
+# travis ci is configured to deploy to elastic beanstalk
+
+deploy:
+  provider: elasticbeanstalk
+  region: "us-west-1"
+  app: "docker-react"
+  env: "Dockerreact-env"
+  bucket_name: "elasticbeanstalk-us-west-1-958371029899"
+  bucket_path: "docker-react"
+  on:
+    branch: main
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY

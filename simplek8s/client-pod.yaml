@@ -1,0 +1,19 @@
+# defines set of objects we can use
+apiVersion: v1
+# type of object we want to create
+kind: Pod
+metadata:
+  # arbitrary name (mostly used in logging)
+  name: client-pod
+  # label selector
+  labels:
+    component: web
+spec:
+  containers:
+    # name is arbitrary
+    - name: client
+      # image container will be running
+      image: stephengrider/multi-client
+      # expose port 3000
+      ports:
+        - containerPort: 3000

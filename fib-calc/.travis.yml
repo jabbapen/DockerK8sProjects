@@ -1,0 +1,35 @@
+language: generic
+sudo: required
+services:
+  - docker
+
+before_install:
+  - docker build -f ./client/Dockerfile.dev -t connorethan/react-test ./client
+
+script:
+  - docker run -e CI=true connorethan/react-test npm run test
+
+after_success:
+  - docker build -t connorethan/multi-client ./client
+  - docker build -t connorethan/multi-nginx ./nginx
+  - docker build -t connorethan/multi-server ./server
+  - docker build -t connorethan/multi-worker ./worker
+  # This logins to docker without using multistep wizard
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+  - docker push connorethan/multi-client
+  - docker push connorethan/multi-nginx
+  - docker push connorethan/multi-server
+  - docker push connorethan/multi-worker
+
+deploy:
+  provider: elasticbeanstalk
+  region: us-west-1
+  # may need to chech
+  app: fib-calc
+  env: Fibcalc-env
+  bucket_name: elasticbeanstalk-us-west-1-958371029899
+  bucket_path: fib-calc
+  on:
+    branch: master
+  access_key_id: $AWS_ACCESS_KEY
+  secret_access_key: $AWS_SECRET_KEY

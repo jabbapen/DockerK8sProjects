@@ -1,0 +1,25 @@
+# Use an existing docker image as a base
+FROM alpine
+
+# Download and install dependenccy
+# apk is a package manager for Alpine Linux
+# This takes the image from ^ and makes a temporary container for it then executes the run command in it
+RUN apk add --update gcc
+RUN apk add --update redis
+
+# Afterwards we take a filesystem snapshot and save a temporary images
+
+# Takes ^ image and runs it in a temporary container to tell it its primary command
+# Tell the image what to do when it is run
+CMD ["redis-server"]
+# Takes a snapshot of the filesystem, gets rid of intermediate container and saves it as a docker image and get
+
+# using cache means that docker saved the image in the cache and will just use that image for the next step
+# If you ever change a docker file you want to add to end rather than middle as changing order of operations can prevent fetching from the cache
+
+
+# Tagging an image
+# docker build -t my-image-name . 
+# my-image-name should be of form DockerID/projectname:version
+# when running not putting :version will automatically run the latest version
+# technically version is the tag and the rest is the project repo directory

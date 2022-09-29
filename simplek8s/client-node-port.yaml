@@ -1,0 +1,22 @@
+# types of objects we can have
+apiVersion: v1
+# Service has types like: ClusterIP, NodePort, LoadBalancer, Ingress
+kind: Service
+metadata:
+  name: client-node-port
+spec:
+  # NodePort: expose service to outside world
+  # only use Nodeport for dev purposes
+  type: NodePort
+  ports:
+    # port is how other pods get access to this pod
+    - port: 3050
+      # send any traffic to port 3000
+      targetPort: 3000
+      # port we can access for testing
+      # if we do not assign this it will be randomly assigned
+      nodePort: 31515
+  # label selector (We redirect traffic to objects with selector web)
+  selector:
+    # This key value pair is arbitrary
+    component: web

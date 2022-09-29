@@ -1,0 +1,15 @@
+# Specify a base image
+FROM node:alpine
+
+# We want to give a working directory so we don't have file conflicts
+# Generally safe to put in usr folder
+WORKDIR /usr/app
+
+
+# install some dependencies
+COPY ./package.json ./
+RUN npm install
+COPY ./ ./
+
+# Default command
+CMD ["npm", "start"]

@@ -1,0 +1,35 @@
+language: generic
+sudo: required
+services:
+  - docker
+env:
+  global:
+    - SHA=$(git rev-parse HEAD)
+    # This means disable prompts
+    - CLOUDSDK_CORE_DISABLE_PROMPTS=1
+before_install:
+  # This decrypts are file and places it into our travis directory
+  - openssl aes-256-cbc -K $encrypted_9f3b5599b056_key -iv $encrypted_9f3b5599b056_iv -in service-account.json.enc -out service-account.json -d
+  # this installs the google cloud sdk
+  - curl https://sdk.cloud.google.com | bash > /dev/null;
+  # apply config that will modify are shell environment
+  - source $HOME/google-cloud-sdk/path.bash.inc
+  # this installs kubectl
+  - gcloud components update kubectl
+  # gcloud config stuff
+  # This gives us authentication to mess with the cluster
+  - gcloud auth activate-service-account --key-file service-account.json
+  - gcloud config set project multi-k8s-358316
+  - gcloud config set compute/zone us-west1-a
+  - gcloud container clusters get-credentials multi-cluster
+  # end of gcloud config stuff
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker build -t connorethan/react-test -f ./client/Dockerfile.dev ./client
+script:
+  - docker run -e CI=true connorethan/react-test npm test
+
+deploy:
+  provider: script
+  script: bash ./deploy.sh
+  on:
+    branch: main
